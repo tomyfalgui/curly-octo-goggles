@@ -1,0 +1,89 @@
+/** RESET **/
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+body {
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
+    Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+/** END RESET **/
+img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #dcdcdc;
+  align-self: center;
+}
+
+.container {
+  padding: 3rem 2rem;
+  margin: 0 auto;
+  max-width: 1024px;
+}
+
+h1 {
+  margin-bottom: 2rem;
+}
+
+form {
+  display: flex;
+  position: relative;
+  width: 100%;
+  font-size: 0.9rem;
+}
+
+form > :not(:last-child) {
+  margin-right: 1rem;
+}
+
+form > input[type='text'] {
+  flex-grow: 1;
+  border-radius: 4px;
+  border: 1px solid #dcdcdc;
+  padding: 4px 8px;
+}
+
+form > button {
+  padding: 8px 16px;
+  color: white;
+  background-color: #7e34f7;
+  border: 0;
+  border-radius: 4px;
+  font-weight: 700;
+}
+
+form::after {
+  content: '';
+  display: block;
+  position: absolute;
+  bottom: -3.5rem;
+  background-color: #dcdcdc;
+  width: 100%;
+  height: 1px;
+}
