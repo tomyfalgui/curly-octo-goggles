@@ -1,10 +1,12 @@
 const express = require('express')
+const cors = require('cors')
 const bodyParser = require('body-parser')
 
 const { retrieveComments, createComment } = require('./models')
 
 const app = express()
 
+app.use(cors('*'))
 app.use(bodyParser.json())
 
 app.get('/health-check', (req, res) => {
