@@ -87,3 +87,23 @@ form::after {
   width: 100%;
   height: 1px;
 }
+
+.responses .response {
+  display: flex;
+}
+
+.response > .content-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.content-block > .header {
+  display: flex;
+}
+
+.content-block > .content {
+}
+
+.content-block > .actions {
+  display: flex;
+}
