@@ -135,7 +135,7 @@ form::after {
   margin-left: -9px;
 }
 
-.actions > button {
+.actions button {
   background-color: transparent;
   border: 0;
   font-size: 0.6875rem;
