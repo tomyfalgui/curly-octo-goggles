@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker'
+import { io } from 'socket.io-client'
 
 import { generateResponseNode } from './lib.js'
 export const BACKEND = 'http://localhost:4444'
@@ -7,14 +8,28 @@ document.querySelectorAll('img').forEach(node => {
   node.src = faker.image.avatar()
 })
 
-async function fetchResponses() {
+export async function fetchResponses() {
   return await fetch(`${BACKEND}/comments`).then(resp => resp.json())
 }
-function displayComments(comments) {
+export function displayComments(comments) {
+  const socket = io(BACKEND)
   const commentsParent = document.querySelector('.responses')
   commentsParent.innerHTML = ''
   comments.reverse().forEach(comment => {
-    const responseContainer = generateResponseNode(comment)
+    const { responseContainer, contentBlock } = generateResponseNode(
+      comment,
+      true,
+      socket
+    )
+    for (let child of comment.children.reverse()) {
+      const { responseContainer: childResponse } = generateResponseNode(
+        child,
+        false,
+        socket
+      )
+
+      contentBlock.appendChild(childResponse)
+    }
     commentsParent.appendChild(responseContainer)
   })
 }
@@ -22,6 +37,7 @@ function displayComments(comments) {
 function handleCommentSubmission() {
   const form = document.querySelector('form')
   const input = document.querySelector('input[type="text"]')
+  let submitting = false
 
   form.addEventListener('submit', function (e) {
     e.preventDefault()
@@ -29,26 +45,31 @@ function handleCommentSubmission() {
       return
     }
 
-    fetch(`${BACKEND}/comments`, {
-      method: 'POST',
-      mode: 'cors',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        content: input.value,
-        name: faker.name.fullName(),
-      }),
-    })
-      .then(val => val.json())
-      .then(async () => {
-        input.value = ''
-        const responses = await fetchResponses()
-        displayComments(responses.comments)
+    if (!submitting) {
+      submitting = true
+      fetch(`${BACKEND}/comments`, {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content: input.value,
+          name: faker.name.fullName(),
+        }),
       })
-      .catch(err => {
-        console.error(err)
-      })
+        .then(val => val.json())
+        .then(async () => {
+          input.value = ''
+          const responses = await fetchResponses()
+          displayComments(responses.comments)
+          submitting = false
+        })
+        .catch(err => {
+          console.error(err)
+          submitting = false
+        })
+    }
   })
 }
 
