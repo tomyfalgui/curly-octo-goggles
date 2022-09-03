@@ -58,6 +58,12 @@ form {
   margin-bottom: 6rem;
 }
 
+form.child {
+  width: 100%;
+  margin-top: 2rem;
+  margin-bottom: 0;
+}
+
 form > :not(:last-child) {
   margin-right: 1rem;
 }
@@ -78,7 +84,7 @@ form > button {
   font-weight: 700;
 }
 
-form::after {
+form:not(.child)::after {
   content: '';
   display: block;
   position: absolute;
@@ -91,6 +97,9 @@ form::after {
 .responses .response {
   display: flex;
   align-items: flex-start;
+}
+
+.responses > .response {
   margin-bottom: 2rem;
 }
 
@@ -102,6 +111,7 @@ form::after {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  width: 100%;
 }
 
 .content-block > .header {
@@ -132,7 +142,12 @@ form::after {
 
 .content-block > .actions {
   display: flex;
+  align-items: flex-end;
   margin-left: -9px;
+}
+
+.content-block > .response.child {
+  margin-top: 2rem;
 }
 
 .actions button {
@@ -141,4 +156,14 @@ form::after {
   font-size: 0.6875rem;
   font-weight: 600;
   color: #4b587c;
+}
+
+.reply-container {
+  display: none;
+  margin-bottom: 2rem;
+  width: 100%;
+}
+
+.reply-container.visible {
+  display: block;
 }
