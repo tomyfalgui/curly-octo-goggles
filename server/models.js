@@ -19,7 +19,12 @@ function createComment({ name, content }) {
   return knex('comments').insert({ name, content, upvotes: 0 })
 }
 
+function upvoteComment(id) {
+  return knex('comments').where({ id }).increment('upvotes', 1)
+}
+
 module.exports = {
   retrieveComments,
   createComment,
+  upvoteComment,
 }
