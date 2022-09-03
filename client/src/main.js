@@ -1,5 +1,4 @@
 import { faker } from '@faker-js/faker'
-
 const BACKEND = 'http://localhost:4444'
 
 document.querySelectorAll('img').forEach(node => {
@@ -48,46 +47,87 @@ function convertToTimeAgo(dateString) {
   return `${val} ${val > 1 ? `${unit}s` : unit} ago`
 }
 
+function generateResponseNode(comment) {
+  const responseContainer = document.createElement('div')
+  const avatar = document.createElement('img')
+  const header = document.createElement('div')
+  const contentBlock = document.createElement('div')
+  const name = document.createElement('span')
+  const time = document.createElement('span')
+  const content = document.createElement('p')
+  const actions = document.createElement('div')
+  const upvote = document.createElement('button')
+
+  avatar.src = faker.image.avatar()
+
+  name.innerText = comment.name
+  time.innerText = convertToTimeAgo(comment.created_at)
+
+  header.classList.add('header')
+  header.appendChild(name)
+  header.appendChild(time)
+
+  content.classList.add('content')
+  content.innerText = comment.content
+
+  upvote.innerText = `▲ ${comment.upvotes} Upvote`
+  upvote.classList.add('upvote-button')
+  upvote.dataset.id = comment.id
+  upvote.dataset.upvotes = comment.upvotes
+
+  actions.appendChild(upvote)
+  actions.classList.add('actions')
+
+  contentBlock.appendChild(header)
+  contentBlock.appendChild(content)
+  contentBlock.appendChild(actions)
+  contentBlock.classList.add('content-block')
+
+  responseContainer.classList.add('response')
+  responseContainer.appendChild(avatar)
+  responseContainer.appendChild(contentBlock)
+
+  return responseContainer
+}
+
 function displayComments(comments) {
   const commentsParent = document.querySelector('.responses')
-  comments.forEach(comment => {
-    const responseContainer = document.createElement('div')
-    const avatar = document.createElement('img')
-    const header = document.createElement('div')
-    const contentBlock = document.createElement('div')
-    const name = document.createElement('span')
-    const time = document.createElement('span')
-    const content = document.createElement('p')
-    const actions = document.createElement('div')
-    const upvote = document.createElement('button')
-
-    avatar.src = faker.image.avatar()
-
-    name.innerText = comment.name
-    time.innerText = convertToTimeAgo(comment.created_at)
-
-    header.appendChild(name)
-    header.appendChild(time)
-
-    content.innerText = comment.content
-
-    actions.appendChild(upvote)
-
-    contentBlock.appendChild(header)
-    contentBlock.appendChild(content)
-    contentBlock.appendChild(actions)
-
-    responseContainer.classList.add('response')
-    responseContainer.appendChild(avatar)
-    responseContainer.appendChild(contentBlock)
+  commentsParent.innerHTML = ''
+  comments.reverse().forEach(comment => {
+    const responseContainer = generateResponseNode(comment)
     commentsParent.appendChild(responseContainer)
   })
+}
+
+function upvoteComment(event) {
+  const { upvotes, id } = event.target.dataset
+
+  event.target.dataset.tempUpvotes = +upvotes
+  fetch(`${BACKEND}/comments/${id}/upvote`, {
+    method: 'PUT',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+    .then(resp => {
+      if (resp.ok) {
+        event.target.innerText = `▲ ${+upvotes + 1} Upvote`
+        event.target.dataset.upvotes = +upvotes + 1
+        event.target.dataset.tempUpvotes = +upvotes + 1
+      }
+      throw new Error('upvote failed')
+    })
+    .catch(() => {
+      const oldUpvotes = event.target.dataset.tempUpvotes
+      event.target.innerText = `▲ ${oldUpvotes} Upvote`
+      event.target.dataset.upvotes = +oldUpvotes
+    })
 }
 
 function handleCommentSubmission() {
   const form = document.querySelector('form')
   const input = document.querySelector('input[type="text"]')
-  const submit = document.querySelector('button[type="submit"]')
 
   form.addEventListener('submit', function (e) {
     e.preventDefault()
@@ -95,8 +135,26 @@ function handleCommentSubmission() {
       return
     }
 
-    console.log(input.value)
-    input.value = ''
+    fetch(`${BACKEND}/comments`, {
+      method: 'POST',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        content: input.value,
+        name: faker.name.fullName(),
+      }),
+    })
+      .then(val => val.json())
+      .then(async () => {
+        input.value = ''
+        const responses = await fetchResponses()
+        displayComments(responses.comments)
+      })
+      .catch(err => {
+        console.error(err)
+      })
   })
 }
 
@@ -105,6 +163,12 @@ async function main() {
 
   displayComments(responses.comments)
   handleCommentSubmission()
+
+  document.querySelector('.responses').addEventListener('click', function (e) {
+    if (Array.from(e.target.classList).includes('upvote-button')) {
+      upvoteComment(e)
+    }
+  })
 }
 
 main().catch(err => console.error(err))

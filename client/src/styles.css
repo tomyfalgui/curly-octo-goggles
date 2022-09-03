@@ -38,7 +38,6 @@ img {
   height: 40px;
   border-radius: 50%;
   background-color: #dcdcdc;
-  align-self: center;
 }
 
 .container {
@@ -56,6 +55,7 @@ form {
   position: relative;
   width: 100%;
   font-size: 0.9rem;
+  margin-bottom: 6rem;
 }
 
 form > :not(:last-child) {
@@ -90,20 +90,55 @@ form::after {
 
 .responses .response {
   display: flex;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+}
+
+.response > img {
+  margin-right: 11px;
 }
 
 .response > .content-block {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
 }
 
 .content-block > .header {
   display: flex;
+  align-items: center;
+}
+
+.header > span:first-child {
+  font-size: 0.812rem;
+  font-weight: 600;
+}
+
+.header > span:first-child::after {
+  content: '・';
+}
+
+.header > span:nth-child(2) {
+  color: #4b587c;
+  font-size: 0.6875rem;
 }
 
 .content-block > .content {
+  max-width: 650px;
+  font-size: 0.812rem;
+  line-height: 1.5;
+  margin-bottom: 14px;
 }
 
 .content-block > .actions {
   display: flex;
+  margin-left: -9px;
+}
+
+.actions > button {
+  background-color: transparent;
+  border: 0;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #4b587c;
 }
