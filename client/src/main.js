@@ -2,8 +2,9 @@ import { faker } from '@faker-js/faker'
 import { io } from 'socket.io-client'
 
 import { generateResponseNode } from './lib.js'
-export const BACKEND = 'http://localhost:4444'
+export const BACKEND = 'https://backendghost.easiestcnft.com'
 
+const socket = io(BACKEND)
 document.querySelectorAll('img').forEach(node => {
   node.src = faker.image.avatar()
 })
@@ -12,7 +13,6 @@ export async function fetchResponses() {
   return await fetch(`${BACKEND}/comments`).then(resp => resp.json())
 }
 export function displayComments(comments) {
-  const socket = io(BACKEND)
   const commentsParent = document.querySelector('.responses')
   commentsParent.innerHTML = ''
   comments.reverse().forEach(comment => {
