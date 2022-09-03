@@ -32,12 +32,10 @@ app.get('/comments', async (req, res) => {
 })
 
 app.post('/comments', async (req, res) => {
-  const { name, content } = req.body
-  console.log(req.body)
-  console.log(content)
+  const { name, content, parentId } = req.body
 
   try {
-    await createComment({ name, content })
+    await createComment({ name, content, parentId })
     res.status(201).json({ name, content })
   } catch (err) {
     res.status(500).json({ message: 'Error creating comment', error: err })
@@ -56,7 +54,6 @@ app.put('/comments/:id/upvote', async (req, res) => {
 
 io.on('connection', socket => {
   socket.on('upvote', id => {
-    console.log('upvote', id)
     socket.broadcast.emit('upvote', id)
   })
 })
